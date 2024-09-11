@@ -1,0 +1,9 @@
+api = "0.2"
+
+[buildpack]
+  id = "com.wilsonfranca.lambda-custom-runtime"
+  name = "Lambda Custom Runtime Buildpack"
+  version = "0.0.1"
+
+[[stacks]]
+  id = "io.buildpacks.stacks.jammy"

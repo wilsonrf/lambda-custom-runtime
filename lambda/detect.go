@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	ConfigNativeImage      = "BP_NATIVE_IMAGE"
-	PlanEntryNativeImage   = "native-image-application"
-	PlanEntryCustomRuntime = "lambda-custom-runtime"
+	ConfigNativeImage              = "BP_NATIVE_IMAGE"
+	PlanEntryNativeImage           = "native-image-application"
+	PlanEntryCustomRuntime         = "lambda-custom-runtime"
+	PlanEntryCustomRuntimeEmulator = "lambda-custom-runtime-emulator"
 )
 
 type Detect struct {
@@ -19,10 +20,12 @@ type Detect struct {
 
 func (d *Detect) Detect(context packit.DetectContext) (packit.DetectResult, error) {
 
+	result := packit.DetectResult{}
+
 	if env, ok := os.LookupEnv(ConfigNativeImage); ok {
 		if env == "true" {
 			d.Logger.Process("PASSED: BP_NATIVE_IMAGE is true")
-			return packit.DetectResult{
+			result = packit.DetectResult{
 				Plan: packit.BuildPlan{
 					Provides: []packit.BuildPlanProvision{
 						{Name: PlanEntryCustomRuntime},
@@ -32,13 +35,22 @@ func (d *Detect) Detect(context packit.DetectContext) (packit.DetectResult, erro
 						{Name: PlanEntryCustomRuntime},
 					},
 				},
-			}, nil
+			}
+
+			if emu, ok := os.LookupEnv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR"); ok {
+				if emu == "true" {
+					d.Logger.Process("PASSED: BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR is true")
+					result.Plan.Provides = append(result.Plan.Provides, packit.BuildPlanProvision{Name: PlanEntryCustomRuntimeEmulator})
+				}
+			}
 		} else {
-			return packit.DetectResult{}, nil
+			result = packit.DetectResult{}
 		}
 	} else {
-		return packit.DetectResult{}, nil
+		result = packit.DetectResult{}
 	}
+
+	return result, nil
 }
 
 func (d *Detect) DetectFunc(context packit.DetectContext) (packit.DetectResult, error) {

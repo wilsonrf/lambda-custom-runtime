@@ -1,0 +1,10 @@
+= Lambda Custom Runtime
+
+This buildpack installs a custom runtime for AWS Lambda.
+
+== Behavior
+
+It will participate if one of the following conditions are met:
+
+- A bootstrap script is present in the application directory.
+

@@ -23,7 +23,9 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 			Expect(os.Unsetenv("BP_NATIVE_IMAGE")).To(gomega.Succeed())
 		})
 		it.After(func() {
-			Expect(os.Unsetenv("BP_NATIVE_IMAGE")).To(gomega.Succeed())
+			os.Clearenv()
+			Expect(os.LookupEnv("BP_NATIVE_IMAGE")).To(gomega.BeEmpty())
+			Expect(os.LookupEnv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR")).To(gomega.BeEmpty())
 		})
 		it("fails without BP_NATIVE_IMAGE", func() {
 			Expect(detect.Detect(ctx)).To(gomega.Equal(packit.DetectResult{}))
@@ -36,7 +38,9 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 			detect = lambda.Detect{Logger: scribe.NewLogger(os.Stdout)}
 		})
 		it.After(func() {
-			Expect(os.Unsetenv("BP_NATIVE_IMAGE")).To(gomega.Succeed())
+			os.Clearenv()
+			Expect(os.LookupEnv("BP_NATIVE_IMAGE")).To(gomega.BeEmpty())
+			Expect(os.LookupEnv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR")).To(gomega.BeEmpty())
 		})
 		it("passes with BP_NATIVE_IMAGE is set to true", func() {
 			Expect(detect.Detect(ctx)).To(gomega.Equal(packit.DetectResult{
@@ -60,11 +64,12 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 
 	context("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR is not set", func() {
 		it.Before(func() {
-			Expect(os.Unsetenv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR")).To(gomega.Succeed())
 			detect = lambda.Detect{Logger: scribe.NewLogger(os.Stdout)}
 		})
 		it.After(func() {
-			Expect(os.Unsetenv("BP_NATIVE_IMAGE")).To(gomega.Succeed())
+			os.Clearenv()
+			Expect(os.LookupEnv("BP_NATIVE_IMAGE")).To(gomega.BeEmpty())
+			Expect(os.LookupEnv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR")).To(gomega.BeEmpty())
 		})
 		it("passes when BP_NATIVE_IMAGE is true but is without BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR", func() {
 			Expect(os.Setenv("BP_NATIVE_IMAGE", "true")).To(gomega.Succeed())
@@ -84,15 +89,16 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 
 	context("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR is set", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR", "true")).To(gomega.Succeed())
 			detect = lambda.Detect{Logger: scribe.NewLogger(os.Stdout)}
 		})
 		it.After(func() {
-			Expect(os.Unsetenv("BP_NATIVE_IMAGE")).To(gomega.Succeed())
-			Expect(os.Unsetenv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR")).To(gomega.Succeed())
+			os.Clearenv()
+			Expect(os.LookupEnv("BP_NATIVE_IMAGE")).To(gomega.BeEmpty())
+			Expect(os.LookupEnv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR")).To(gomega.BeEmpty())
 		})
 		it("passes when BP_NATIVE_IMAGE is true and BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR is true", func() {
 			Expect(os.Setenv("BP_NATIVE_IMAGE", "true")).To(gomega.Succeed())
+			Expect(os.Setenv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR", "true")).To(gomega.Succeed())
 			Expect(detect.Detect(ctx)).To(gomega.Equal(packit.DetectResult{
 				Plan: packit.BuildPlan{
 					Provides: []packit.BuildPlanProvision{
@@ -102,6 +108,7 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 					Requires: []packit.BuildPlanRequirement{
 						{Name: lambda.PlanEntryNativeImage},
 						{Name: lambda.PlanEntryCustomRuntime},
+						{Name: lambda.PlanEntryCustomRuntimeEmulator},
 					},
 				},
 			}))

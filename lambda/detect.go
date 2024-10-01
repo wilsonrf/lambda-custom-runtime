@@ -24,7 +24,7 @@ func (d *Detect) Detect(context packit.DetectContext) (packit.DetectResult, erro
 
 	if env, ok := os.LookupEnv(ConfigNativeImage); ok {
 		if env == "true" {
-			d.Logger.Process("PASSED: BP_NATIVE_IMAGE is true")
+			d.Logger.Process("BP_NATIVE_IMAGE is true")
 			result = packit.DetectResult{
 				Plan: packit.BuildPlan{
 					Provides: []packit.BuildPlanProvision{
@@ -39,7 +39,8 @@ func (d *Detect) Detect(context packit.DetectContext) (packit.DetectResult, erro
 
 			if emu, ok := os.LookupEnv("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR"); ok {
 				if emu == "true" {
-					d.Logger.Process("PASSED: BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR is true")
+					d.Logger.Process("BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR is true")
+					result.Plan.Requires = append(result.Plan.Requires, packit.BuildPlanRequirement{Name: PlanEntryCustomRuntimeEmulator})
 					result.Plan.Provides = append(result.Plan.Provides, packit.BuildPlanProvision{Name: PlanEntryCustomRuntimeEmulator})
 				}
 			}

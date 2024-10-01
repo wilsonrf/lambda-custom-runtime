@@ -1,7 +1,10 @@
 package main
 
 import (
-	"github.com/paketo-buildpacks/packit"
+	"os"
+
+	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 	"github.com/wilsonrf/lambda-custom-runtime/lambda"
 )
 

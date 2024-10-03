@@ -1,9 +1,22 @@
-api = "0.2"
+api = "0.7"
 
 [buildpack]
   id = "com.wilsonfranca.lambda-custom-runtime"
   name = "Lambda Custom Runtime Buildpack"
   version = "0.0.1"
 
-[[stacks]]
-  id = "io.buildpacks.stacks.jammy"
+  [metadata]
+  include-files = ["LICENSE", "README.adoc", "buildpack.toml"]
+
+  [[metadata.configurations]]
+    build = false
+    default = "false"
+    description = "whether to contribute with a emulator layer"
+    name = "BP_LAMBDA_CUSTOM_RUNTIME_INTERFACE_EMULATOR"
+
+  [[metadata.dependencies]]
+    id      = "aws-lambda-runtime-interface-emulator"
+    version = "1.15"
+    uri     = "https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/v1.15/aws-lambda-rie"
+    sha256  = "a2bca0ff67c5435a02bf28a85524a8ff2ec222f403c19d92fe304f3f7c7cce10"
+    stacks  = ["*"]

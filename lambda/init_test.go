@@ -8,7 +8,9 @@ import (
 )
 
 func TestUnit(t *testing.T) {
-	suite := spec.New("lambda runtime", spec.Report(report.Terminal{}), spec.Parallel())
+	suite := spec.New("lambda runtime", spec.Report(report.Terminal{}))
 	suite("Detect", testDetect)
+	suite("Build", testBuild)
+	suite("Runtime", testRuntime)
 	suite.Run(t)
 }

@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
-	detect := &lambda.Detect{}
+	logger := scribe.NewLogger(os.Stdout)
+	detect := &lambda.Detect{Logger: logger}
 	packit.Detect(detect.DetectFunc)
 }
